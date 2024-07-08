@@ -16,6 +16,7 @@ public class Order {
     @JoinColumn(name = "user_id")
     private User user;
 
+    @Enumerated
     @Column(name = "status")
     private OrderStatus status;
 

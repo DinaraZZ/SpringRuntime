@@ -23,7 +23,7 @@ public class Review {
     private Boolean published;
 
     @Column(name = "rating")
-    private Short rating;
+    private Integer rating;
 
     @Column(name = "commentary")
     private String commentary;
@@ -64,11 +64,11 @@ public class Review {
         this.published = published;
     }
 
-    public Short getRating() {
+    public Integer getRating() {
         return rating;
     }
 
-    public void setRating(Short rating) {
+    public void setRating(Integer rating) {
         this.rating = rating;
     }
 
