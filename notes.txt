@@ -1,0 +1,9 @@
+    Подключаемые зависимости:
+Spring Boot DevTools
+Lombok
+Spring Web
+Thymeleaf
+Spring Security
+Spring Data JPA
+PostgreSQL Driver
+Validation
