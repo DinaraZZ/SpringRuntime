@@ -7,3 +7,18 @@ Spring Security
 Spring Data JPA
 PostgreSQL Driver
 Validation
+
+    В файле application.properties:
+spring.datasource.url=
+spring.datasource.username=
+spring.datasource.password=
+
+В pom.xml заккоментить всё связанное с секьюрити и обновить
+
+Spring - фреймворк, основанный на Java EE/Jakarta EE
+
+Клиент -> HTTP запрос -> Сервер -> HTTP ответ -> Клиент
+    Два HTTP метода для выполнения запроса:
+1) GET - при передаче данных отправляет в открытом виде засчёт отсутствия в тела запроса. Не подходит для передачи
+важных данных, большого объёма данных, файлов
+2) POST - отправляет через тело запроса, поддерживает передачу большого объёма данных, файлов
