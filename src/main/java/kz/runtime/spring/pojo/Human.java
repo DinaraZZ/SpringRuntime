@@ -1,5 +1,12 @@
 package kz.runtime.spring.pojo;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
+@Getter // создает геттеры на этапе компиляции
+// @RequiredArgsConstructor // создает конструктор для всех обязательных(final) полей
+@AllArgsConstructor
 public class Human {
     private String name;
     private Integer age;
@@ -10,13 +17,13 @@ public class Human {
         this.age = age;
     }
 
-    public Human(String name, Integer age, String city) {
+    /*public Human(String name, Integer age, String city) {
         this.name = name;
         this.age = age;
         this.city = city;
-    }
+    }*/
 
-    public String getName() {
+    /*public String getName() {
         return name;
     }
 
@@ -26,5 +33,5 @@ public class Human {
 
     public String getCity() {
         return city;
-    }
+    }*/
 }

@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:ph="http://www.w3.org/1999/html" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>ViewController.secondResource</title>
+</head>
+<body>
+
+<form action="/view_controller/resource_2" method="get">
+    <input type="text" name="city" placeholder="City"/>
+    <button type="submit">Search</button>
+</form>
+
+<div th:each="human : ${humans}" style="border-bottom: 1px solid black;">
+    <p>Name: <b th:text="${human.name}"></b></p>
+    <p>Age: <b th:text="${human.age}"></b></p>
+    <p>City: <b th:text="${human.city}"></b></p>
+</div>
+
+</body>
+</html>
