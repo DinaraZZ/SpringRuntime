@@ -104,3 +104,20 @@ create table cart
     foreign key (user_id) references "user" (id),
     foreign key (product_id) references product (id)
 );
+
+insert into category(name)
+values ('smartphones'),
+       ('furniture'),
+       ('headphones');
+
+insert into product(category_id, name, price, visibility)
+values (2, 'iPhone 13 Pro Max', 560000, true),
+       (2, 'Samsung S24', 670000, true),
+       (2, 'iPhone XR', 390000, true),
+       (3, 'Table', 76550, true),
+       (3, 'Sofa Grey', 567000, true),
+       (4, 'AirPods 3', 84990, true),
+       (4, 'Realme Buds T100', 13890, true),
+       (4, 'Marshall Major IV', 33000, true),
+       (4, 'TWS F9-5', 1195, true),
+       (4, 'JBL Tune 510BT', 13000, true);

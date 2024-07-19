@@ -31,7 +31,7 @@ public class ViewController {
                 new Human("Milly", 79, "Semey")
         };
 
-        if (!(city == null || city.length() == 0)) {
+        /*if (!(city == null || city.length() == 0)) {
             List<Human> humansResult = new ArrayList<>();
             for (Human human : humans) {
                 if ()
@@ -39,7 +39,7 @@ public class ViewController {
         }
 
         model.addAttribute("humans", humans);
-        model.addAttribute("city", city);
+        model.addAttribute("city", city);*/
         return "view_resource_2_page";
     }
 }
