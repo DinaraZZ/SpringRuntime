@@ -5,6 +5,10 @@
     <title>Products</title>
 </head>
 <body>
+
+<a href="/products/create">
+    <button type="submit">Create product</button>
+</a>
 <div th:each="product : ${products}" style="border-bottom: 1px solid black;">
     <p>Name: <b th:text="${product.getName()}"></b></p>
     <p>Price: <b th:text="${product.getPrice()}"></b></p>

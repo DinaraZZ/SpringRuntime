@@ -121,3 +121,12 @@ values (2, 'iPhone 13 Pro Max', 560000, true),
        (4, 'Marshall Major IV', 33000, true),
        (4, 'TWS F9-5', 1195, true),
        (4, 'JBL Tune 510BT', 13000, true);
+
+insert into characteristic(name, category_id)
+values ('Диагональ', 2),
+       ('Объём встроенной памяти', 2),
+       ('Поддержка беспроводной зарядки', 2),
+       ('Цвет', 3),
+       ('Материал', 3),
+       ('Тип', 4),
+       ('Разъём для зарядки', 4);
