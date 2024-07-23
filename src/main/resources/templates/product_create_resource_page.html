@@ -6,23 +6,30 @@
 </head>
 <body>
 
-<form method="post">
-<!--    <input type="text" name="category" placeholder="Product name"/>-->
-    <input type="text" name="name" placeholder="Product name"/>
-    <input type="text" name="price" placeholder="Product price"/>
-<!--    <select name="category">
-        <option disabled selected>Select category</option>
-        <option th:each="category : ${categories}"
-                th:value="${category.getId()}"
-                th:text="${category.getName()}">
-    </select>-->
-    <button type="submit">Create</button>
+<form method="post" action="/products">
+    <input type="hidden" name="categoryId" th:value="${category.id}">
+    <p>
+        <label>Категория: </label></br>
+        <input type="text" th:value="${category.name}" readonly>
+    </p>
+    <p>
+        <label>Введите название товара: </label></br>
+        <input type="text" name="product">
+    </p>
+    <p>
+        <label>Введите цену товара: </label></br>
+        <input type="text" name="price">
+    </p>
+    <p>
+        <th:block th:each="characteristic : ${characteristics}">
+            <label th:text="${characteristic.name}"></label></br>
+            <input type="text" name="description"></br></br>
+        </th:block>
+    </p>
+    <p>
+        <input type="submit" value="Отправить">
+    </p>
 </form>
-
-<br/>
-<a href="/products">
-    <button type="submit">Main page</button>
-</a>
 
 </body>
 </html>

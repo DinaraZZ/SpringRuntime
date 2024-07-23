@@ -31,15 +31,19 @@ public class ViewController {
                 new Human("Milly", 79, "Semey")
         };
 
-        /*if (!(city == null || city.length() == 0)) {
-            List<Human> humansResult = new ArrayList<>();
+        if (city != null) {
+            List<Human> humansList = new ArrayList<>();
             for (Human human : humans) {
-                if ()
+                if (human.getCity().equals(city)) {
+                    humansList.add(human);
+                }
             }
+            model.addAttribute("humans", humansList);
+            model.addAttribute("city", city);
+        } else {
+            model.addAttribute("humans", humans);
         }
 
-        model.addAttribute("humans", humans);
-        model.addAttribute("city", city);*/
         return "view_resource_2_page";
     }
 }

@@ -6,8 +6,8 @@
 </head>
 <body>
 
-<form method="post">
-  <select name="category">
+<form method="post" action="/products/create">
+  <select name="categoryId">
     <option disabled selected>Select category</option>
     <option th:each="category : ${categories}"
             th:value="${category.getId()}"

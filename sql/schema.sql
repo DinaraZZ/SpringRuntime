@@ -111,22 +111,22 @@ values ('smartphones'),
        ('headphones');
 
 insert into product(category_id, name, price, visibility)
-values (2, 'iPhone 13 Pro Max', 560000, true),
-       (2, 'Samsung S24', 670000, true),
-       (2, 'iPhone XR', 390000, true),
-       (3, 'Table', 76550, true),
-       (3, 'Sofa Grey', 567000, true),
-       (4, 'AirPods 3', 84990, true),
-       (4, 'Realme Buds T100', 13890, true),
-       (4, 'Marshall Major IV', 33000, true),
-       (4, 'TWS F9-5', 1195, true),
-       (4, 'JBL Tune 510BT', 13000, true);
+values (1, 'iPhone 13 Pro Max', 560000, true),
+       (1, 'Samsung S24', 670000, true),
+       (1, 'iPhone XR', 390000, true),
+       (2, 'Table', 76550, true),
+       (2, 'Sofa Grey', 567000, true),
+       (3, 'AirPods 3', 84990, true),
+       (3, 'Realme Buds T100', 13890, true),
+       (3, 'Marshall Major IV', 33000, true),
+       (3, 'TWS F9-5', 1195, true),
+       (3, 'JBL Tune 510BT', 13000, true);
 
 insert into characteristic(name, category_id)
-values ('Диагональ', 2),
-       ('Объём встроенной памяти', 2),
-       ('Поддержка беспроводной зарядки', 2),
-       ('Цвет', 3),
-       ('Материал', 3),
-       ('Тип', 4),
-       ('Разъём для зарядки', 4);
+values ('Диагональ', 1),
+       ('Объём встроенной памяти', 1),
+       ('Поддержка беспроводной зарядки', 1),
+       ('Цвет', 2),
+       ('Материал', 2),
+       ('Тип', 3),
+       ('Разъём для зарядки', 3);
