@@ -8,6 +8,7 @@ import kz.runtime.spring.repository.CategoryRepository;
 import kz.runtime.spring.repository.ProductCharacteristicRepository;
 import kz.runtime.spring.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.Banner;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,7 +17,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 public class ProductController {
@@ -67,8 +70,7 @@ public class ProductController {
     }
 
     @PostMapping(path = "/products/create")
-    public String saveProduct(Model model,
-                              @RequestParam(name = "categoryId", required = false) Long categoryId,
+    public String saveProduct(@RequestParam(name = "categoryId", required = false) Long categoryId,
                               @RequestParam(name = "product", required = false) String product,
                               @RequestParam(name = "price", required = false) Integer price,
                               @RequestParam(name = "description", required = false) String... description) {
@@ -92,8 +94,59 @@ public class ProductController {
                 productCharacteristicRepository.save(characteristicDescription);
             }
         }
-        List<Product> products = productRepository.findAll();
-        model.addAttribute("products", products);
+
+        return "redirect:/products";
+    }
+
+    @GetMapping(path = "/products/change")
+    public String changeProduct(@RequestParam(name = "productId", required = false) Long productId,
+                                Model model) {
+
+        Product product = productRepository.findById(productId).orElseThrow();
+        List<Category> categories = categoryRepository.findAll();
+        List<Characteristic> characteristics = product.getCategory().getCharacteristics();
+        List<ProductCharacteristic> productCharacteristics = product.getProductCharacteristics();
+
+        Map<Characteristic, ProductCharacteristic> map = new HashMap<>();
+
+        for (Characteristic characteristic : characteristics) {
+            for (ProductCharacteristic productCharacteristic : productCharacteristics) {
+                if (productCharacteristic.getCharacteristic().getName().equals(characteristic.getName())) {
+//                    map.put(characteristic, productCharacteristic);
+                } else {
+//                    ProductCharacteristic pc = new ProductCharacteristic();
+//                    pc.setDescription(characteristic.getName());
+//                    map.put(characteristic, pc);
+                }
+            }
+        }
+
+//        for (Characteristic characteristic : map.keySet()) {
+//            System.out.println(characteristic.getName() + " --- " + map.get(characteristic).getDescription());
+//        }
+
+        model.addAttribute("product", product);
+        model.addAttribute("categories", categories);
+        model.addAttribute("characteristics", characteristics);
+        model.addAttribute("map", map);
+
+        return "product_change_product_page";
+    }
+
+    @PostMapping(path = "/products/change")
+    public String saveChangedProduct(@RequestParam(name = "productId", required = false) Long productId,
+                                     @RequestParam(name = "categoryId", required = false) Long categoryId,
+                                     @RequestParam(name = "name", required = false) String name,
+                                     @RequestParam(name = "price", required = false) Integer price) {
+
+        if (productId != null && categoryId != null && name != null && price != null) {
+            Product product = productRepository.findById(productId).orElseThrow();
+            Category category = categoryRepository.findById(categoryId).orElseThrow();
+            product.setCategory(category);
+            product.setName(name);
+            product.setPrice(price);
+            productRepository.save(product);
+        }
 
         return "redirect:/products";
     }
