@@ -54,11 +54,6 @@ public class ProductController {
     }
 
     @GetMapping(path = "/products/create")
-    public String createProduct() {
-        return "product_create_resource_page";
-    }
-
-    @PostMapping(path = "/products/create")
     public String fillProduct(
             Model model,
             @RequestParam(name = "categoryId", required = false) Long categoryId
@@ -71,7 +66,7 @@ public class ProductController {
         return "product_create_resource_page";
     }
 
-    @PostMapping(path = "/products")
+    @PostMapping(path = "/products/create")
     public String saveProduct(Model model,
                               @RequestParam(name = "categoryId", required = false) Long categoryId,
                               @RequestParam(name = "product", required = false) String product,
@@ -99,6 +94,7 @@ public class ProductController {
         }
         List<Product> products = productRepository.findAll();
         model.addAttribute("products", products);
-        return "product_product_resource_page";
+
+        return "redirect:/products";
     }
 }
