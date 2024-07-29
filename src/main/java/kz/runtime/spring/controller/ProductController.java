@@ -1,12 +1,7 @@
 package kz.runtime.spring.controller;
 
-import kz.runtime.spring.entity.Category;
-import kz.runtime.spring.entity.Characteristic;
-import kz.runtime.spring.entity.Product;
-import kz.runtime.spring.entity.ProductCharacteristic;
-import kz.runtime.spring.repository.CategoryRepository;
-import kz.runtime.spring.repository.ProductCharacteristicRepository;
-import kz.runtime.spring.repository.ProductRepository;
+import kz.runtime.spring.entity.*;
+import kz.runtime.spring.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.Banner;
 import org.springframework.stereotype.Controller;
@@ -32,6 +27,12 @@ public class ProductController {
 
     @Autowired
     private ProductCharacteristicRepository productCharacteristicRepository;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private ReviewRepository reviewRepository;
 
     @GetMapping(path = "/products")
     public String productResource(@RequestParam(name = "categoryId", required = false) Long categoryId,
@@ -220,6 +221,21 @@ public class ProductController {
             }
         }
         return "redirect:/products";
+    }
+
+    @GetMapping(path = "/products/view")
+    public String viewProduct(Model model,
+                              @RequestParam(name = "productId", required = true) Long productId) {
+        Product product = productRepository.findById(productId).orElseThrow();
+        List<ProductCharacteristic> productCharacteristics = product.getProductCharacteristics();
+        List<Review> reviews = product.getReviews();
+
+        model.addAttribute("product", product);
+        model.addAttribute("characteristics", productCharacteristics);
+        model.addAttribute("reviews", reviews);
+
+        return "product_view_page";
+
     }
 
 }

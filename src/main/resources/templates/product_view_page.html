@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Product View</title>
+</head>
+<body>
+
+<p>Название товара: <b th:text="${product.getName()}"></b></p>
+<p>Категория товара: <b th:text="${product.getCategory().getName()}"></b></p>
+<p>Цена товара: <b th:text="${product.getPrice()}"></b></p>
+
+<th:block th:each="characteristic : ${characteristics}">
+    <p>
+    <div style="display: flex;">
+        <div th:text="${characteristic.getCharacteristic().getName()} + ':'"></div>
+        <b th:text="${characteristic.getDescription()}"></b>
+    </div>
+    </p>
+</th:block>
+
+<div style="margin-top: 100px;">
+    <th:block th:each="review : ${reviews}">
+        <p>
+        <div style="display: flex;">
+            <div th:text="${review.getReviewDate()}"></div>
+            <div style="margin-left: 15px;"
+                 th:text="${review.getUser().getFirstName()} + ' ' + ${review.getUser().getLastName()}"></div>
+        </div>
+        <div style="display: flex;">
+            <div th:text="${review.getRating()}"></div>
+            <div style="margin-left: 15px;" th:text="${review.getCommentary()}"></div>
+        </div>
+        </p>
+    </th:block>
+</div>
+
+</body>
+</html>

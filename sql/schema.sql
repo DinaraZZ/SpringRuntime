@@ -130,3 +130,10 @@ values ('Диагональ', 1),
        ('Материал', 2),
        ('Тип', 3),
        ('Разъём для зарядки', 3);
+
+insert into "user"(role, login, password, first_name, last_name, sign_up_date)
+values (1, 'user1', 'password1', 'Tom', 'Watson', '2024-07-29 12:31:00');
+
+insert into review(user_id, product_id, published, rating, commentary, review_date)
+values (1, 2, true, 5, 'Good phone', '2024-07-29 12:45:00'),
+       (1, 2, true, 5, 'Super', '2024-07-29 12:57:00');
