@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 public class Review {
     @Id
     @Column(name = "id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne

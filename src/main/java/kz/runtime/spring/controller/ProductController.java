@@ -2,6 +2,7 @@ package kz.runtime.spring.controller;
 
 import kz.runtime.spring.entity.*;
 import kz.runtime.spring.repository.*;
+import kz.runtime.spring.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.Banner;
 import org.springframework.stereotype.Controller;
@@ -11,6 +12,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.text.DecimalFormat;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -33,6 +36,9 @@ public class ProductController {
 
     @Autowired
     private ReviewRepository reviewRepository;
+
+    @Autowired
+    private UserService userService;
 
     @GetMapping(path = "/products")
     public String productResource(@RequestParam(name = "categoryId", required = false) Long categoryId,
@@ -230,12 +236,42 @@ public class ProductController {
         List<ProductCharacteristic> productCharacteristics = product.getProductCharacteristics();
         List<Review> reviews = product.getReviews();
 
+        double averageRating = 0;
+        for (Review review : reviews) {
+            averageRating += review.getRating();
+        }
+        averageRating /= reviews.size();
+
+        DecimalFormat df = new DecimalFormat("#.#");
+        String formattedNumber = df.format(averageRating);
+
         model.addAttribute("product", product);
         model.addAttribute("characteristics", productCharacteristics);
         model.addAttribute("reviews", reviews);
+        model.addAttribute("averageRating", formattedNumber);
 
         return "product_view_page";
+    }
 
+    @PostMapping(path = "/products/saveReview")
+    public String saveReview(@RequestParam(name = "productId", required = true) Long productId,
+                             @RequestParam(name = "rating", required = true) Integer rating,
+                             @RequestParam(name = "commentary", required = true) String commentary) {
+
+        User currentUser = userService.getCurrentUser();
+        Product product = productRepository.findById(productId).orElseThrow();
+
+        Review review = new Review();
+        review.setUser(currentUser);
+        review.setProduct(product);
+        review.setPublished(true);
+        review.setRating(rating);
+        review.setCommentary(commentary);
+        review.setReviewDate(LocalDateTime.now());
+
+        reviewRepository.save(review);
+
+        return "redirect:/products";
     }
 
 }

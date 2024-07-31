@@ -10,10 +10,8 @@
     <button type="submit" style="width: 150px; height: 50px;">Create product</button>
 </a>
 
-<div th:each="product : ${products}" style="border-bottom: 1px solid black;">
-    <p>Name: <b th:text="${product.getName()}"></b></p>
-    <p>Price: <b th:text="${product.getPrice()}"></b></p>
-    <p>Category: <b th:text="${product.getCategory().getName()}"></b></p>
+<div th:each="product : ${products}" style="border-bottom: 1px solid black; ">
+    <h3 th:text="${product.getName()}"></h3>
 
     <div style="display: flex; margin-bottom: 5px;">
         <form method="get" action="/products/change">
