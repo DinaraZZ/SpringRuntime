@@ -32,10 +32,10 @@ public class ProductController {
     private ProductCharacteristicRepository productCharacteristicRepository;
 
     @Autowired
-    private UserRepository userRepository;
+    private ReviewRepository reviewRepository;
 
     @Autowired
-    private ReviewRepository reviewRepository;
+    private CartRepository cartRepository;
 
     @Autowired
     private UserService userService;
@@ -270,6 +270,22 @@ public class ProductController {
         review.setReviewDate(LocalDateTime.now());
 
         reviewRepository.save(review);
+
+        return "redirect:/products";
+    }
+
+    @GetMapping(path = "/products/addToCart")
+    public String addToCart(@RequestParam(name = "productId", required = true) Long productId) {
+        User currentUser = userService.getCurrentUser();
+        Product product = productRepository.findById(productId).orElseThrow();
+
+//        Cart cart = currentUser.
+//
+//        Cart cart = new Cart();
+//        cart.setUser(currentUser);
+//        cart.setProduct(product);
+//        cart.setAmount(1);
+        //Найти корзину по комбинации Продкута + Пользователя
 
         return "redirect:/products";
     }

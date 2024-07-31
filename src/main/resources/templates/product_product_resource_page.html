@@ -14,12 +14,16 @@
     <h3 th:text="${product.getName()}"></h3>
 
     <div style="display: flex; margin-bottom: 5px;">
-        <form method="get" action="/products/change">
+        <form method="get" action="/products/change" style="margin-right: 5px;">
             <button type="submit" name="productId" th:value="${product.getId()}">Edit</button>
         </form>
 
-        <form method="get" action="/products/view">
+        <form method="get" action="/products/view" style="margin-right: 5px;">
             <button type="submit" name="productId" th:value="${product.getId()}">View</button>
+        </form>
+
+        <form method="get" action="/products/addToCart" style="margin-right: 5px;">
+            <button type="submit" name="productId" th:value="${product.getId()}">Add to cart</button>
         </form>
     </div>
 
