@@ -276,18 +276,61 @@ public class ProductController {
 
     @GetMapping(path = "/products/addToCart")
     public String addToCart(@RequestParam(name = "productId", required = true) Long productId) {
-        User currentUser = userService.getCurrentUser();
+        User user = userService.getCurrentUser();
         Product product = productRepository.findById(productId).orElseThrow();
-
-//        Cart cart = currentUser.
-//
-//        Cart cart = new Cart();
-//        cart.setUser(currentUser);
-//        cart.setProduct(product);
-//        cart.setAmount(1);
-        //Найти корзину по комбинации Продкута + Пользователя
+        Cart cart = cartRepository.findByUserAndProduct(user, product).orElse(new Cart());
+        cart.setUser(user);
+        cart.setProduct(product);
+        if (cart.getAmount() == null) {
+            cart.setAmount(1);
+        } else {
+            cart.setAmount(cart.getAmount() + 1);
+        }
+        cartRepository.save(cart);
 
         return "redirect:/products";
     }
 
+    @GetMapping(path = "/products/cart")
+    public String cart(Model model) {
+        User user = userService.getCurrentUser();
+        List<Cart> carts = user.getCarts();
+        model.addAttribute("carts", carts);
+        return "cart_page";
+    }
+
+    @PostMapping(path = "/products/cart")
+    public String changeAmountInCart(@RequestParam(name = "decrement", required = false) Integer decrement,
+                                     @RequestParam(name = "increment", required = false) Integer increment,
+                                     @RequestParam(name = "delete", required = false) Integer delete,
+                                     @RequestParam(name = "cartId", required = true) Long cartId) {
+        Cart cart = cartRepository.findById(cartId).orElseThrow();
+        if (increment != null || decrement != null) {
+            if (increment != null) {
+                cart.setAmount(cart.getAmount() + 1);
+            }
+            if (decrement != null) {
+                if (cart.getAmount() > 0) {
+                    cart.setAmount(cart.getAmount() - 1);
+                }
+            }
+            cartRepository.save(cart);
+        }
+        if (delete != null) {
+            cartRepository.delete(cart);
+        }
+        return "redirect:/products/cart";
+    }
+
+    @GetMapping(path = "/products/update_cart")
+    public String updateCart() {
+        User user = userService.getCurrentUser();
+        List<Cart> carts = user.getCarts();
+        for (Cart cart : carts) {
+            if (cart.getAmount() == 0) {
+                cartRepository.delete(cart);
+            }
+        }
+        return "redirect:/products";
+    }
 }

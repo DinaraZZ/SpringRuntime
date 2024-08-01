@@ -6,9 +6,14 @@
 </head>
 <body>
 
-<a href="/products/create/category">
-    <button type="submit" style="width: 150px; height: 50px;">Create product</button>
-</a>
+<div style="display: flex; flex-direction: row; margin-bottom: 20px;">
+    <a href="/products/create/category">
+        <button type="submit" style="width: 150px; height: 50px;">Create product</button>
+    </a>
+    <a href="/products/cart">
+        <button type="submit" style="width: 150px; height: 50px; margin-left: 20px;">Cart</button>
+    </a>
+</div>
 
 <div th:each="product : ${products}" style="border-bottom: 1px solid black; ">
     <h3 th:text="${product.getName()}"></h3>
