@@ -232,23 +232,35 @@ public class ProductController {
     @GetMapping(path = "/products/view")
     public String viewProduct(Model model,
                               @RequestParam(name = "productId", required = true) Long productId) {
+
         Product product = productRepository.findById(productId).orElseThrow();
         List<ProductCharacteristic> productCharacteristics = product.getProductCharacteristics();
-        List<Review> reviews = product.getReviews();
 
+        // Список отзывов к товару
+        List<Review> reviews = reviewRepository.findAllByPublishedAndProduct(true, product).orElseThrow();
+
+        // Рейтинг товара
         double averageRating = 0;
         for (Review review : reviews) {
-            averageRating += review.getRating();
+            if (review.getPublished()) {
+                averageRating += review.getRating();
+            }
         }
         averageRating /= reviews.size();
 
         DecimalFormat df = new DecimalFormat("#.#");
         String formattedNumber = df.format(averageRating);
 
+        // Существует ли отзыв по комбинации юзер-продукт
+        User currentUser = userService.getCurrentUser();
+        Review review = reviewRepository.findByUserAndProduct(currentUser, product).orElse(null);
+        boolean reviewExists = review != null;
+
         model.addAttribute("product", product);
         model.addAttribute("characteristics", productCharacteristics);
         model.addAttribute("reviews", reviews);
         model.addAttribute("averageRating", formattedNumber);
+        model.addAttribute("reviewExists", reviewExists);
 
         return "product_view_page";
     }
@@ -264,7 +276,7 @@ public class ProductController {
         Review review = new Review();
         review.setUser(currentUser);
         review.setProduct(product);
-        review.setPublished(true);
+        review.setPublished(false);
         review.setRating(rating);
         review.setCommentary(commentary);
         review.setReviewDate(LocalDateTime.now());
@@ -295,30 +307,40 @@ public class ProductController {
     public String cart(Model model) {
         User user = userService.getCurrentUser();
         List<Cart> carts = user.getCarts();
+
+        double sum = 0;
+        for (Cart cart : carts) {
+            sum += cart.getProduct().getPrice() * cart.getAmount();
+        }
+
         model.addAttribute("carts", carts);
+        model.addAttribute("sum", sum);
+
         return "cart_page";
     }
 
-    @PostMapping(path = "/products/cart")
-    public String changeAmountInCart(@RequestParam(name = "decrement", required = false) Integer decrement,
-                                     @RequestParam(name = "increment", required = false) Integer increment,
-                                     @RequestParam(name = "delete", required = false) Integer delete,
-                                     @RequestParam(name = "cartId", required = true) Long cartId) {
+    @GetMapping(path = "/products/cart/increase")
+    public String increaseAmountInCart(@RequestParam(name = "cartId", required = true) Long cartId) {
         Cart cart = cartRepository.findById(cartId).orElseThrow();
-        if (increment != null || decrement != null) {
-            if (increment != null) {
-                cart.setAmount(cart.getAmount() + 1);
-            }
-            if (decrement != null) {
-                if (cart.getAmount() > 0) {
-                    cart.setAmount(cart.getAmount() - 1);
-                }
-            }
-            cartRepository.save(cart);
+        cart.setAmount(cart.getAmount() + 1);
+        cartRepository.save(cart);
+        return "redirect:/products/cart";
+    }
+
+    @GetMapping(path = "/products/cart/decrease")
+    public String decreaseAmountInCart(@RequestParam(name = "cartId", required = true) Long cartId) {
+        Cart cart = cartRepository.findById(cartId).orElseThrow();
+        if (cart.getAmount() > 0) {
+            cart.setAmount(cart.getAmount() - 1);
         }
-        if (delete != null) {
-            cartRepository.delete(cart);
-        }
+        cartRepository.save(cart);
+        return "redirect:/products/cart";
+    }
+
+    @GetMapping(path = "/products/cart/delete")
+    public String deleteProductInCart(@RequestParam(name = "cartId", required = true) Long cartId) {
+        Cart cart = cartRepository.findById(cartId).orElseThrow();
+        cartRepository.delete(cart);
         return "redirect:/products/cart";
     }
 

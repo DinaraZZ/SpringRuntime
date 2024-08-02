@@ -24,20 +24,25 @@
 
 
 <!--Оставить отзыв и рейтинг-->
-<form method="post" action="/products/saveReview" style="margin-top: 70px;">
-    <input type="hidden" name="productId" th:value="${product.getId()}">
-    <select name="rating" style="margin-bottom: 5px;">
-        <option disabled selected>Choose rating</option>
-        <option th:each="i : ${#numbers.sequence(1,5)}"
-                th:value="${i}"
-                th:text="${i}">
-    </select>
-    <br/>
-    <input type="text" name="commentary" placeholder="Leave a commentary" style="width: 500px;"/>
-    <br/>
-    <br/>
-    <button type="submit">Save</button>
-</form>
+<th:block th:if="${reviewExists} == false">
+    <form method="post" action="/products/saveReview" style="margin-top: 70px;">
+        <input type="hidden" name="productId" th:value="${product.getId()}">
+        <select name="rating" style="margin-bottom: 5px;">
+            <option disabled selected>Choose rating</option>
+            <option th:each="i : ${#numbers.sequence(1,5)}"
+                    th:value="${i}"
+                    th:text="${i}">
+        </select>
+        <br/>
+        <input type="text" name="commentary" placeholder="Leave a commentary" style="width: 500px;"/>
+        <br/>
+        <br/>
+        <button type="submit">Save</button>
+    </form>
+</th:block>
+<th:block th:if="${reviewExists} == true">
+    <p style="margin-top: 70px;">Вы уже оставили отзыв к этому товару. Повторная оценка невозможна.</p>
+</th:block>
 
 
 <!--Отзывы-->
@@ -56,6 +61,7 @@
         </p>
     </th:block>
 </div>
+
 
 </body>
 </html>

@@ -61,3 +61,4 @@ Model - ключ-значение, между java и html
 
 
 run -> console чтобы посмотреть sout
+в папку static кинуть css файлы
