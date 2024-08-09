@@ -8,6 +8,7 @@
 <th:block th:each="cart:${carts}">
     <p th:text="${'Название товара: ' + cart.getProduct().name}"></p>
     <p th:text="${'Количество товара: ' + cart.getAmount()}"></p>
+    <p th:text="${'Общая сумма: ' + cart.getProduct().getPrice() * cart.getAmount()}"></p>
     <div style="display: flex; flex-direction: row;">
         <form method="get" action="/products/cart/decrease">
             <button type="submit" name="cartId" th:value="${cart.id}">-</button>
@@ -23,9 +24,10 @@
     <div style="border-bottom: solid 1px black; margin-bottom: 2px; margin-top: 5px"></div>
 </th:block>
 <p th:text="${'Сумма всех товаров: ' + sum + ' тг.'}"></p>
-<!--<form method="get" action="/products/placeOrder">-->
-<!--    <button type="submit" name="userId" th:value="${carts.get(0).getUser()}"></button>-->
-<!--</form>-->
+<form method="get" action="/products/place_order">
+    <button>Place the order</button>
+</form>
+<br/>
 <form method="get" action="/products/update_cart">
     <button>Main page</button>
 </form>

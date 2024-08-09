@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Moderate Reviews</title>
+</head>
+<body>
+<th:block th:each="review : ${reviews}">
+    <div style="border-bottom: 1px solid black;">
+        <p th:text="${'Название товара: ' + review.getProduct().getName()}"></p>
+        <p th:text="${'Пользователь: ' + review.getUser().getLogin()}"></p>
+        <p th:text="${'Отзыв: ' + review.getCommentary()}"></p>
+        <div style="display: flex; margin-bottom: 10px;">
+            <form method="get" action="/products/moderate_reviews/post">
+                <button type="submit" name="reviewId" th:value="${review.getId()}"
+                        style="margin-right: 10px;">Post
+                </button>
+            </form>
+            <form method="get" action="/products/moderate_reviews/delete">
+                <button type="submit" name="reviewId" th:value="${review.getId()}">Delete</button>
+            </form>
+        </div>
+    </div>
+</th:block>
+
+<br/>
+<form method="get" action="/products">
+    <button>Main page</button>
+</form>
+</body>
+</html>

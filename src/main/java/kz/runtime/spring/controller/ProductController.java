@@ -40,6 +40,12 @@ public class ProductController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private OrderRepository orderRepository;
+
+    @Autowired
+    private OrderProductRepository orderProductRepository;
+
     @GetMapping(path = "/products")
     public String productResource(@RequestParam(name = "categoryId", required = false) Long categoryId,
                                   Model model) {
@@ -237,7 +243,7 @@ public class ProductController {
         List<ProductCharacteristic> productCharacteristics = product.getProductCharacteristics();
 
         // Список отзывов к товару
-        List<Review> reviews = reviewRepository.findAllByPublishedAndProduct(true, product).orElseThrow();
+        List<Review> reviews = reviewRepository.findAllByPublishedAndProduct(true, product);
 
         // Рейтинг товара
         double averageRating = 0;
@@ -306,7 +312,7 @@ public class ProductController {
     @GetMapping(path = "/products/cart")
     public String cart(Model model) {
         User user = userService.getCurrentUser();
-        List<Cart> carts = user.getCarts();
+        List<Cart> carts = cartRepository.findAllByUserOrderById(user);
 
         double sum = 0;
         for (Cart cart : carts) {
@@ -354,5 +360,73 @@ public class ProductController {
             }
         }
         return "redirect:/products";
+    }
+
+    @GetMapping(path = "/products/place_order")
+    public String placeOrder() {
+        User user = userService.getCurrentUser();
+        List<Cart> carts = user.getCarts();
+        if (carts.size() > 0) {
+            Order order = new Order();
+            order.setUser(user);
+            order.setStatus(OrderStatus.CREATED);
+            order.setOrderDate(LocalDateTime.now());
+            orderRepository.save(order);
+            for (Cart cart : carts) {
+                OrderProduct orderProduct = new OrderProduct();
+                orderProduct.setOrder(order);
+                orderProduct.setProduct(cart.getProduct());
+                orderProduct.setAmount(cart.getAmount());
+                orderProductRepository.save(orderProduct);
+            }
+            cartRepository.deleteAll(carts);
+        }
+
+        return "redirect:/products/orders";
+    }
+
+    @GetMapping(path = "/products/orders")
+    public String showOrders(Model model) {
+        User user = userService.getCurrentUser();
+
+        List<Order> orders = user.getOrders();
+        System.out.println(orders.size());
+        Map<Long, Integer> orderCosts = new HashMap<>();
+
+        for (Order order1 : orders) {
+            System.out.println(order1.getId());
+            int sum = 0;
+            for (OrderProduct orderProduct : order1.getOrderProducts()) {
+                sum += orderProduct.getProduct().getPrice() * orderProduct.getAmount();
+            }
+            orderCosts.put(order1.getId(), sum);
+            System.out.println(order1.getOrderProducts().size());
+        }
+        model.addAttribute("orders", orders);
+        model.addAttribute("orderCosts", orderCosts);
+        return "order_page";
+    }
+
+    @GetMapping(path = "/products/moderate_reviews")
+    public String moderateReviews(Model model) {
+        List<Review> reviews = reviewRepository.findAllByPublished(false);
+        model.addAttribute("reviews", reviews);
+
+        return "moderate_reviews_page";
+    }
+
+    @GetMapping(path = "/products/moderate_reviews/post")
+    public String postReview(@RequestParam(name = "reviewId", required = true) Long reviewId) {
+        Review review = reviewRepository.findById(reviewId).orElseThrow();
+        review.setPublished(true);
+        reviewRepository.save(review);
+        return "redirect:/products/moderate_reviews";
+    }
+
+    @GetMapping(path = "/products/moderate_reviews/delete")
+    public String deleteReview(@RequestParam(name = "reviewId", required = true) Long reviewId) {
+        Review review = reviewRepository.findById(reviewId).orElseThrow();
+        reviewRepository.delete(review);
+        return "redirect:/products/moderate_reviews";
     }
 }

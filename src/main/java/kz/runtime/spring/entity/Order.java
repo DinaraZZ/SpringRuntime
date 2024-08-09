@@ -10,6 +10,7 @@ import java.util.List;
 public class Order {
     @Id
     @Column(name = "id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne
