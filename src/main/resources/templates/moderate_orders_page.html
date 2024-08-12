@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Moderate Orders</title>
+</head>
+<body>
+
+<div style="margin-bottom: 20px; display: flex;">
+    <form method="get" action="/products/moderate_orders/filter_by_status">
+        <select name="status">
+            <option disabled selected>Choose status</option>
+            <option th:each="status : ${statuses}"
+                    th:text="${status}"
+                    th:value="${status}"></option>
+        </select>
+        <button type="submit" style="margin-left: 10px;">Filter</button>
+    </form>
+</div>
+
+<div th:each="order : ${orders}" style="margin-bottom: 15px;">
+    <div style="border-bottom: 1px solid black;">
+        <div th:text="${'ID заказа: ' + order.getId()}" style="margin-bottom: 15px;"></div>
+        <div th:text="${'Дата заказа: ' + order.getOrderDate()}" style="margin-bottom: 15px;"></div>
+
+        <form method="get" action="/products/moderate_orders/change_status">
+            <input type="hidden" name="orderId" th:value="${order.getId()}"/>
+            <div style="display: flex; margin-bottom: 15px;">
+                <div style="margin-right: 5px;">Статус заказа:</div>
+                <select name="status">
+                    <option disabled selected th:text="${order.getStatus()}"></option>
+                    <option th:each="status : ${statuses}"
+                            th:if="${status != order.getStatus()}"
+                            th:text="${status}"
+                            th:value="${status}"></option>
+                </select>
+                <button type="submit" style="margin-left: 10px;">Save</button>
+            </div>
+        </form>
+
+        <div style="display: flex; margin-bottom: 15px;">
+            <div style="margin-right: 5px;">Товары:</div>
+            <th:block th:each="product:${order.getOrderProducts()}">
+                <div th:text="${product.getProduct().name + '(' + product.getAmount() + ')'}"
+                     style="margin-right: 16px;"></div>
+            </th:block>
+        </div>
+    </div>
+</div>
+
+<br/>
+<form method="get" action="/products">
+    <button>Main page</button>
+</form>
+
+
+</body>
+</html>

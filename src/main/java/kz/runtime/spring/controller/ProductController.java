@@ -5,6 +5,7 @@ import kz.runtime.spring.repository.*;
 import kz.runtime.spring.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.Banner;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -428,5 +429,38 @@ public class ProductController {
         Review review = reviewRepository.findById(reviewId).orElseThrow();
         reviewRepository.delete(review);
         return "redirect:/products/moderate_reviews";
+    }
+
+    @GetMapping(path = "/products/moderate_orders")
+    public String moderateOrders(Model model) {
+        List<Order> orders = orderRepository.findAll(Sort.by(Sort.Order.asc("id")));
+        model.addAttribute("orders", orders);
+
+        OrderStatus[] statuses = OrderStatus.values();
+        model.addAttribute("statuses", statuses);
+        return "moderate_orders_page";
+    }
+
+    @GetMapping(path = "/products/moderate_orders/change_status")
+    public String moderateOrderStatus(@RequestParam(name = "orderId", required = true) Long orderId,
+                                      @RequestParam(name = "status", required = true) OrderStatus status) {
+//        System.out.println(status);
+        Order order = orderRepository.findById(orderId).orElseThrow();
+        order.setStatus(status);
+        orderRepository.save(order);
+
+        return "redirect:/products/moderate_orders";
+    }
+
+    @GetMapping(path = "/products/moderate_orders/filter_by_status")
+    public String moderateOrdersFilterByStatus(Model model,
+                                               @RequestParam(name = "status", required = false) OrderStatus status) {
+        List<Order> orders = status == null ? orderRepository.findAll() : orderRepository.findAllByStatusOrderById(status);
+//        List<Order> orders = orderRepository.findAllByStatusOrderById(status);
+        model.addAttribute("orders", orders);
+
+        OrderStatus[] statuses = OrderStatus.values();
+        model.addAttribute("statuses", statuses);
+        return "moderate_orders_page";
     }
 }
