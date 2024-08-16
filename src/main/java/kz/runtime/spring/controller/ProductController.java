@@ -47,6 +47,9 @@ public class ProductController {
     @Autowired
     private OrderProductRepository orderProductRepository;
 
+    @Autowired
+    private CharacteristicRepository characteristicRepository;
+
     @GetMapping(path = "/products")
     public String productResource(@RequestParam(name = "categoryId", required = false) Long categoryId,
                                   Model model) {
@@ -163,7 +166,8 @@ public class ProductController {
         Map<Characteristic, ProductCharacteristic> map = new HashMap<>();
 
         if (categoryId.equals(oldCategoryId)) {
-            List<Characteristic> characteristics = product.getCategory().getCharacteristics();
+//            List<Characteristic> characteristics = product.getCategory().getCharacteristics();
+            List<Characteristic> characteristics = characteristicRepository.findAllByCategoryOrderById(product.getCategory());
             List<ProductCharacteristic> characteristicDescriptions = product.getProductCharacteristics();
 
 
@@ -202,37 +206,33 @@ public class ProductController {
     public String saveChangedCharacteristics(
             Model model,
             @RequestParam(name = "productId", required = false) Long productId,
-            @RequestParam(name = "description", required = false) String... description
+            @RequestParam(name = "description", required = false) List<String> description,
+            @RequestParam(name = "characteristicId", required = false) List<Long> characteristicIds
     ) {
         Product product = productRepository.findById(productId).orElseThrow();
         List<ProductCharacteristic> characteristicDescriptions = product.getProductCharacteristics();
-        for (int i = 0; i < description.length; i++) {
-            if (description[i] != null && !description[i].isEmpty()) {
-                boolean exists = false;
-                ProductCharacteristic characteristicDescription = new ProductCharacteristic();
-                if (!characteristicDescriptions.isEmpty()) {
-                    for (ProductCharacteristic characteristicDescription1 : characteristicDescriptions) {
-                        if (characteristicDescription1.getCharacteristic().getName().equals(
-                                product.getCategory().getCharacteristics().get(i).getName()
-                        )) {
-                            exists = true;
-                            characteristicDescription = characteristicDescription1;
-                            break;
-                        }
-                    }
-                }
-                if (!exists) {
-                    characteristicDescription.setDescription(description[i]);
-                    characteristicDescription.setProduct(product);
-                    characteristicDescription.setCharacteristic(product.getCategory().getCharacteristics().get(i));
-                    productCharacteristicRepository.save(characteristicDescription);
-                } else {
-                    characteristicDescription.setDescription(description[i]);
-                    productCharacteristicRepository.save(characteristicDescription);
-                }
 
+        for (int i = 0; i < characteristicIds.size(); i++) {
+            boolean exists = false;
+
+            for (ProductCharacteristic productCharacteristic : characteristicDescriptions) {
+                if (productCharacteristic.getCharacteristic().getId().equals(characteristicIds.get(i)) &&
+                        !description.get(i).isEmpty()) {
+                    exists = true;
+                    productCharacteristic.setDescription(description.get(i));
+                    productCharacteristicRepository.save(productCharacteristic);
+                }
+            }
+
+            if (!exists && !description.get(i).isEmpty()) {
+                ProductCharacteristic productCharacteristic = new ProductCharacteristic();
+                productCharacteristic.setProduct(product);
+                productCharacteristic.setCharacteristic(characteristicRepository.findById(characteristicIds.get(i)).orElseThrow());
+                productCharacteristic.setDescription(description.get(i));
+                productCharacteristicRepository.save(productCharacteristic);
             }
         }
+
         return "redirect:/products";
     }
 
