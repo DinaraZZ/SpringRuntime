@@ -1,71 +1,88 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
+<link rel="stylesheet" type="text/css" href="/css/product_view.css"/>
+
 <head>
     <meta charset="UTF-8">
     <title>Product View</title>
 </head>
 <body>
 
-<!--Описание товара-->
-<p>Название товара: <b th:text="${product.getName()}"></b></p>
-<p>Категория товара: <b th:text="${product.getCategory().getName()}"></b></p>
-<p>Цена товара: <b th:text="${product.getPrice()}"></b></p>
+<div class="container">
 
-<th:block th:each="characteristic : ${characteristics}">
-    <p>
-    <div style="display: flex;">
-        <div th:text="${characteristic.getCharacteristic().getName()} + ':'"></div>
-        <b th:text="${characteristic.getDescription()}"></b>
+    <!--Описание товара-->
+    <div class="product_container">
+
+        <div class="characteristics_block">
+            <div class="product_name" th:text="${product.getName()}"></div>
+            <div th:if="${averageRating > -1}" class="rating" th:text="${'Рейтинг: ' + averageRating}"></div>
+            <div th:if="${averageRating == -1}" class="rating" th:text="${'Рейтинг: -'}"></div>
+
+            <div class="characteristics">
+                <div class="char_row">
+                    <div class="char_parameter">Категория</div>
+                    <div class="char_value" th:text="${product.getCategory().getName()}"></div>
+                </div>
+                <th:block th:each="characteristic : ${characteristics}">
+                    <div class="char_row">
+                        <div class="char_parameter" th:text="${characteristic.getCharacteristic().getName()}"></div>
+                        <div class="char_value" th:text="${characteristic.getDescription()}"></div>
+                    </div>
+                </th:block>
+            </div>
+        </div>
+
+        <div class="price_block">
+            <div class="price" th:text="${product.getPrice() + ' тг.'}"></div>
+            <form method="get" action="/products/addToCart">
+                <button class="cart_button" type="submit" name="productId" th:value="${product.getId()}">
+                    Add to Cart
+                </button>
+            </form>
+        </div>
     </div>
-    </p>
-</th:block>
-
-<p>Средний рейтинг товара: <b th:text="${averageRating}"></b></p>
-
-
-<!--Оставить отзыв и рейтинг-->
-<th:block th:if="${reviewExists} == false">
-    <form method="post" action="/products/saveReview" style="margin-top: 70px;">
-        <input type="hidden" name="productId" th:value="${product.getId()}">
-        <select name="rating" style="margin-bottom: 5px;">
-            <option disabled selected>Choose rating</option>
-            <option th:each="i : ${#numbers.sequence(1,5)}"
-                    th:value="${i}"
-                    th:text="${i}">
-        </select>
-        <br/>
-        <input type="text" name="commentary" placeholder="Leave a commentary" style="width: 500px;"/>
-        <br/>
-        <br/>
-        <button type="submit">Save</button>
+    <form method="get" action="/products">
+        <button class="main_page_button">Main page</button>
     </form>
-</th:block>
-<th:block th:if="${reviewExists} == true">
-    <p style="margin-top: 70px;">Вы уже оставили отзыв к этому товару. Повторная оценка невозможна.</p>
-</th:block>
+
+    <!--Оставить отзыв и рейтинг-->
+    <div class="review_container">
+        <th:block th:if="${reviewExists} == false">
+            <form class="review_block" method="post" action="/products/saveReview">
+                <input type="hidden" name="productId" th:value="${product.getId()}">
+                <select class="rating_select" name="rating">
+                    <option disabled selected>Choose rating</option>
+                    <option th:each="i : ${#numbers.sequence(1,5)}"
+                            th:value="${i}"
+                            th:text="${i}">
+                </select>
+                <textarea class="rating_text" type="text" name="commentary" placeholder="Leave a commentary"></textarea>
+                <button class="save_button" type="submit">Save</button>
+            </form>
+        </th:block>
+
+        <th:block th:if="${reviewExists} == true">
+            <p class="not_available_text">Вы уже оставили отзыв к этому товару. Повторная оценка невозможна.</p>
+        </th:block>
+    </div>
 
 
-<!--Отзывы-->
-<div style="margin-top: 100px;">
-    <th:block th:each="review : ${reviews}">
-        <p>
-        <div style="display: flex;">
-            <div th:text="${review.getReviewDate()}"></div>
-            <div style="margin-left: 15px;"
-                 th:text="${review.getUser().getFirstName()} + ' ' + ${review.getUser().getLastName()}"></div>
+    <!--Отзывы-->
+    <div class="reviews_container">
+        <div th:if="${reviews.size() > 0}" class="comment_block">
+            <th:block th:each="review : ${reviews}">
+                <div class="comment_info">
+                    <div th:text="${review.getUser().getLogin()}"></div>
+                    <div th:text="${review.getReviewDate()}"></div>
+                </div>
+                <div class="comment_text">
+                    <div th:text="${'Рейтинг: ' + review.getRating()}"></div>
+                    <div th:text="${review.getCommentary()}"></div>
+                </div>
+            </th:block>
         </div>
-        <div style="display: flex; border-right: 1px solid black; width: 500px;">
-            <div th:text="${review.getRating()}"></div>
-            <div style="margin-left: 15px;" th:text="${review.getCommentary()}"></div>
-        </div>
-        </p>
-    </th:block>
+    </div>
+
 </div>
-
-<br/>
-<form method="get" action="/products">
-    <button>Main page</button>
-</form>
-
 </body>
 </html>

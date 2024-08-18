@@ -243,20 +243,23 @@ public class ProductController {
         Product product = productRepository.findById(productId).orElseThrow();
         List<ProductCharacteristic> productCharacteristics = product.getProductCharacteristics();
 
+        System.out.println(product.getName());
+
         // Список отзывов к товару
         List<Review> reviews = reviewRepository.findAllByPublishedAndProduct(true, product);
 
         // Рейтинг товара
         double averageRating = 0;
-        for (Review review : reviews) {
-            if (review.getPublished()) {
-                averageRating += review.getRating();
+        if (!reviews.isEmpty()) {
+            for (Review review : reviews) {
+                if (review.getPublished()) {
+                    averageRating += review.getRating();
+                }
             }
+            averageRating = averageRating / reviews.size();
+        } else {
+            averageRating = -1;
         }
-        averageRating /= reviews.size();
-
-        DecimalFormat df = new DecimalFormat("#.#");
-        String formattedNumber = df.format(averageRating);
 
         // Существует ли отзыв по комбинации юзер-продукт
         User currentUser = userService.getCurrentUser();
@@ -266,7 +269,7 @@ public class ProductController {
         model.addAttribute("product", product);
         model.addAttribute("characteristics", productCharacteristics);
         model.addAttribute("reviews", reviews);
-        model.addAttribute("averageRating", formattedNumber);
+        model.addAttribute("averageRating", averageRating);
         model.addAttribute("reviewExists", reviewExists);
 
         return "product_view_page";
