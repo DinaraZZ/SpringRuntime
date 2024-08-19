@@ -243,8 +243,6 @@ public class ProductController {
         Product product = productRepository.findById(productId).orElseThrow();
         List<ProductCharacteristic> productCharacteristics = product.getProductCharacteristics();
 
-        System.out.println(product.getName());
-
         // Список отзывов к товару
         List<Review> reviews = reviewRepository.findAllByPublishedAndProduct(true, product);
 
