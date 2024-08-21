@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Sign up</title>
+</head>
+<body>
+<form method="post" action="/user/sign_up/save">
+
+    <p>
+        <input type="text" name="login" placeholder="Login">
+    </p>
+    <p th:if="${msg != null}" th:text="${msg}"></p>
+
+    <p>
+        <input type="text" name="password" placeholder="Password">
+    </p>
+
+    <p>
+        <input type="text" name="firstName" placeholder="First name">
+    </p>
+
+    <p>
+        <input type="text" name="lastName" placeholder="Last name">
+    </p>
+
+
+    <button type="submit">Save</button>
+
+</form>
+</body>
+</html>

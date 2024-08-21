@@ -50,6 +50,9 @@ public class ProductController {
     @Autowired
     private CharacteristicRepository characteristicRepository;
 
+    @Autowired
+    private UserRepository userRepository;
+
     @GetMapping(path = "/products")
     public String productResource(@RequestParam(name = "categoryId", required = false) Long categoryId,
                                   Model model) {
@@ -463,5 +466,35 @@ public class ProductController {
         OrderStatus[] statuses = OrderStatus.values();
         model.addAttribute("statuses", statuses);
         return "moderate_orders_page";
+    }
+
+    @GetMapping(path = "/user/sign_up")
+    public String signUp() {
+        return "sign_up_page";
+    }
+
+    @PostMapping(path = "/user/sign_up/save")
+    public String saveNewUser(@RequestParam(name = "login", required = true) String login,
+                              @RequestParam(name = "password", required = true) String password,
+                              @RequestParam(name = "firstName", required = true) String firstName,
+                              @RequestParam(name = "lastName", required = true) String lastName,
+                              Model model) {
+        String msg = null;
+        User user = userRepository.findByLogin(login).orElse(null);
+        if (user != null) {
+            msg = "Пользователь с таким логином уже существует";
+            model.addAttribute("msg", msg);
+            return "sign_up_page";
+        } else {
+            user = new User();
+            user.setRole(UserRole.USER);
+            user.setLogin(login);
+            user.setPassword(password);
+            user.setFirstName(firstName);
+            user.setLastName(lastName);
+            user.setSignUpDate(LocalDateTime.now());
+            userRepository.save(user);
+            return "redirect:/login";
+        }
     }
 }

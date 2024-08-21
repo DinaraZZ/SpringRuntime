@@ -10,6 +10,7 @@
 .head_stripe{
     display: flex;
     align-items: center;
+    justify-content: space-between;
     width: 100%;
     height: 40px;
     background-color: #2f5d28;
