@@ -240,7 +240,7 @@ public class ProductController {
         return "redirect:/products";
     }
 
-    @GetMapping(path = "/products/view")
+    @GetMapping(path = "/products/view") // ПРОСМОТР ТОВАРА
     public String viewProduct(Model model,
                               @RequestParam(name = "productId", required = true) Long productId) {
 
@@ -282,7 +282,7 @@ public class ProductController {
         return "product_view_page";
     }
 
-    @PostMapping(path = "/products/saveReview")
+    @PostMapping(path = "/products/saveReview") // СОХРАНИТЬ ОТЗЫВ О ТОВАРЕ
     public String saveReview(@RequestParam(name = "productId", required = true) Long productId,
                              @RequestParam(name = "rating", required = true) Integer rating,
                              @RequestParam(name = "commentary", required = true) String commentary) {
@@ -303,7 +303,7 @@ public class ProductController {
         return "redirect:/products";
     }
 
-    @GetMapping(path = "/products/addToCart")
+    @GetMapping(path = "/products/addToCart") // ДОБАВИТЬ ТОВАР В КОРЗИНУ
     public String addToCart(@RequestParam(name = "productId", required = true) Long productId) {
         User user = userService.getCurrentUser();
         Product product = productRepository.findById(productId).orElseThrow();
@@ -320,7 +320,7 @@ public class ProductController {
         return "redirect:/products";
     }
 
-    @GetMapping(path = "/products/cart")
+    @GetMapping(path = "/products/cart") // КОРЗИНА
     public String cart(Model model) {
         User user = userService.getCurrentUser();
         List<Cart> carts = cartRepository.findAllByUserOrderById(user);
@@ -336,7 +336,7 @@ public class ProductController {
         return "cart_page";
     }
 
-    @GetMapping(path = "/products/cart/increase")
+    @GetMapping(path = "/products/cart/increase") // КОРЗИНА -увеличить количество
     public String increaseAmountInCart(@RequestParam(name = "cartId", required = true) Long cartId) {
         Cart cart = cartRepository.findById(cartId).orElseThrow();
         cart.setAmount(cart.getAmount() + 1);
@@ -344,7 +344,7 @@ public class ProductController {
         return "redirect:/products/cart";
     }
 
-    @GetMapping(path = "/products/cart/decrease")
+    @GetMapping(path = "/products/cart/decrease") // КОРЗИНА -уменьшить количество
     public String decreaseAmountInCart(@RequestParam(name = "cartId", required = true) Long cartId) {
         Cart cart = cartRepository.findById(cartId).orElseThrow();
         if (cart.getAmount() > 0) {
@@ -354,14 +354,14 @@ public class ProductController {
         return "redirect:/products/cart";
     }
 
-    @GetMapping(path = "/products/cart/delete")
+    @GetMapping(path = "/products/cart/delete") // КОРЗИНА -удалить товар
     public String deleteProductInCart(@RequestParam(name = "cartId", required = true) Long cartId) {
         Cart cart = cartRepository.findById(cartId).orElseThrow();
         cartRepository.delete(cart);
         return "redirect:/products/cart";
     }
 
-    @GetMapping(path = "/products/update_cart")
+    @GetMapping(path = "/products/update_cart") // КОРЗИНА -обновление списка
     public String updateCart() {
         User user = userService.getCurrentUser();
         List<Cart> carts = user.getCarts();
@@ -373,7 +373,7 @@ public class ProductController {
         return "redirect:/products";
     }
 
-    @GetMapping(path = "/products/place_order")
+    @GetMapping(path = "/products/place_order") // СДЕЛАТЬ ЗАКАЗ
     public String placeOrder() {
         User user = userService.getCurrentUser();
         List<Cart> carts = user.getCarts();
@@ -396,7 +396,7 @@ public class ProductController {
         return "redirect:/products/orders";
     }
 
-    @GetMapping(path = "/products/orders")
+    @GetMapping(path = "/products/orders") // ЗАКАЗЫ
     public String showOrders(Model model) {
         User user = userService.getCurrentUser();
 
@@ -418,7 +418,7 @@ public class ProductController {
         return "order_page";
     }
 
-    @GetMapping(path = "/products/moderate_reviews")
+    @GetMapping(path = "/products/moderate_reviews") // МОДЕРАЦИЯ ОТЗЫВОВ
     public String moderateReviews(Model model) {
         List<Review> reviews = reviewRepository.findAllByPublished(false);
         model.addAttribute("reviews", reviews);
@@ -426,7 +426,7 @@ public class ProductController {
         return "moderate_reviews_page";
     }
 
-    @GetMapping(path = "/products/moderate_reviews/post")
+    @GetMapping(path = "/products/moderate_reviews/post") // МОДЕРАЦИЯ ОТЗЫВОВ -опубликовать
     public String postReview(@RequestParam(name = "reviewId", required = true) Long reviewId) {
         Review review = reviewRepository.findById(reviewId).orElseThrow();
         review.setPublished(true);
@@ -434,7 +434,7 @@ public class ProductController {
         return "redirect:/products/moderate_reviews";
     }
 
-    @GetMapping(path = "/products/moderate_reviews/delete")
+    @GetMapping(path = "/products/moderate_reviews/delete") // МОДЕРАЦИЯ ОТЗЫВОВ -удалить
     public String deleteReview(@RequestParam(name = "reviewId", required = true) Long reviewId,
                                @RequestParam(name = "productId", required = true) Long productId) {
         Review review = reviewRepository.findById(reviewId).orElseThrow();
@@ -444,7 +444,7 @@ public class ProductController {
         else return "redirect:/products/view?productId=" + productId;
     }
 
-    @GetMapping(path = "/products/moderate_reviews/hide")
+    @GetMapping(path = "/products/moderate_reviews/hide") // МОДЕРАЦИЯ ОТЗЫВОВ -скрыть
     public String hideReview(@RequestParam(name = "productId", required = true) Long productId,
                              @RequestParam(name = "reviewId", required = true) Long reviewId) {
         Review review = reviewRepository.findById(reviewId).orElseThrow();
@@ -453,7 +453,7 @@ public class ProductController {
         return "redirect:/products/view?productId=" + productId;
     }
 
-    @GetMapping(path = "/products/moderate_orders")
+    @GetMapping(path = "/products/moderate_orders") // МОДЕРАЦИЯ ЗАКАЗОВ
     public String moderateOrders(Model model) {
         List<Order> orders = orderRepository.findAll(Sort.by(Sort.Order.asc("id")));
         model.addAttribute("orders", orders);
@@ -463,7 +463,7 @@ public class ProductController {
         return "moderate_orders_page";
     }
 
-    @GetMapping(path = "/products/moderate_orders/change_status")
+    @GetMapping(path = "/products/moderate_orders/change_status") // МОДЕРАЦИЯ ЗАКАЗОВ -поменять статус
     public String moderateOrderStatus(@RequestParam(name = "orderId", required = true) Long orderId,
                                       @RequestParam(name = "status", required = true) OrderStatus status) {
 //        System.out.println(status);
@@ -474,7 +474,7 @@ public class ProductController {
         return "redirect:/products/moderate_orders";
     }
 
-    @GetMapping(path = "/products/moderate_orders/filter_by_status")
+    @GetMapping(path = "/products/moderate_orders/filter_by_status") // МОДЕРАЦИЯ ЗАКАЗОВ -сортировка по статусам
     public String moderateOrdersFilterByStatus(Model model,
                                                @RequestParam(name = "status", required = false) OrderStatus status) {
         List<Order> orders = status == null ? orderRepository.findAll() : orderRepository.findAllByStatusOrderById(status);
@@ -486,7 +486,7 @@ public class ProductController {
         return "moderate_orders_page";
     }
 
-    @GetMapping(path = "/user/sign_up")
+    @GetMapping(path = "/user/sign_up") // РЕГИСТРАЦИЯ
     public String signUp() {
         return "sign_up_page";
     }

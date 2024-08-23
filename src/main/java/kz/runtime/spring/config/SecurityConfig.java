@@ -19,18 +19,17 @@ public class SecurityConfig {
         httpSecurity.authorizeHttpRequests(authorizationConfigurer -> {
             //сначала запрещающие
 
-            /*authorizationConfigurer.requestMatchers("/products/create/**").hasRole("ADMIN"); // создать товар
-            authorizationConfigurer.requestMatchers("/products/cart/**").authenticated(); // корзина
-            authorizationConfigurer.requestMatchers("/products/place_order").authenticated(); // создание заказа
-            authorizationConfigurer.requestMatchers("/products/orders").authenticated(); // заказы
-            authorizationConfigurer.requestMatchers("/products/moderate_reviews/**").hasRole("ADMIN"); // модерация отзывов
-            authorizationConfigurer.requestMatchers("/products/moderate_orders/**").hasRole("ADMIN"); // модерация заказов
-            authorizationConfigurer.requestMatchers("/products/change/**").hasRole("ADMIN"); // редактирование заказов
-            authorizationConfigurer.requestMatchers("/products/addToCart/**").authenticated(); // добавление в корзину*/
-
             authorizationConfigurer.requestMatchers("/products/create/**").hasRole("ADMIN"); // создать товар
             authorizationConfigurer.requestMatchers("/products/change").hasRole("ADMIN"); // изменить товар
             authorizationConfigurer.requestMatchers("/products/change_characteristics").hasRole("ADMIN"); // изменить товар
+            authorizationConfigurer.requestMatchers("/products/saveReview").authenticated(); // сохранить отзыв
+            authorizationConfigurer.requestMatchers("/products/addToCart").authenticated(); // добавить в корзину
+            authorizationConfigurer.requestMatchers("/products/cart/**").authenticated(); // корзина
+            authorizationConfigurer.requestMatchers("/products/update_cart").authenticated(); // обновить корзину
+            authorizationConfigurer.requestMatchers("/products/place_order").authenticated(); // сделать заказ
+            authorizationConfigurer.requestMatchers("/products/orders").authenticated(); // заказы
+            authorizationConfigurer.requestMatchers("/products/moderate_reviews/**").hasRole("ADMIN"); // модерация отзывов
+            authorizationConfigurer.requestMatchers("/products/moderate_orders/**").hasRole("ADMIN"); // модерация заказов
 
             authorizationConfigurer.anyRequest().permitAll();
         });
