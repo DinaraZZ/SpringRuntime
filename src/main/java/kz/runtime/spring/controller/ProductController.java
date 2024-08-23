@@ -53,7 +53,8 @@ public class ProductController {
     @Autowired
     private UserRepository userRepository;
 
-    @GetMapping(path = "/products")
+
+    @GetMapping(path = "/products") // ГЛАВНАЯ СТРАНИЦА
     public String productResource(@RequestParam(name = "categoryId", required = false) Long categoryId,
                                   Model model) {
 
@@ -68,7 +69,7 @@ public class ProductController {
         return "product_product_resource_page";
     }
 
-    @GetMapping(path = "/products/create/category")
+    @GetMapping(path = "/products/create/category") // СОЗДАТЬ ТОВАР -выбрать категорию
     public String chooseCategoryResource(Model model) {
         List<Category> categories = categoryRepository.findAll();
         model.addAttribute("categories", categories);
@@ -76,7 +77,7 @@ public class ProductController {
         return "product_select_category_page";
     }
 
-    @GetMapping(path = "/products/create")
+    @GetMapping(path = "/products/create") // СОЗДАТЬ ТОВАР -заполнить характеристики
     public String fillProduct(
             Model model,
             @RequestParam(name = "categoryId", required = false) Long categoryId
@@ -89,7 +90,7 @@ public class ProductController {
         return "product_create_resource_page";
     }
 
-    @PostMapping(path = "/products/create")
+    @PostMapping(path = "/products/create") // СОЗДАТЬ ТОВАР -сохранить в бд
     public String saveProduct(@RequestParam(name = "categoryId", required = false) Long categoryId,
                               @RequestParam(name = "product", required = false) String product,
                               @RequestParam(name = "price", required = false) Integer price,
@@ -118,7 +119,7 @@ public class ProductController {
         return "redirect:/products";
     }
 
-    @GetMapping(path = "/products/change")
+    @GetMapping(path = "/products/change") // ИЗМЕНИТЬ ТОВАР -изменить категорию, имя, цену
     public String changeProduct(@RequestParam(name = "productId", required = false) Long productId,
                                 Model model) {
 
@@ -131,7 +132,7 @@ public class ProductController {
         return "product_change_product_page";
     }
 
-    @PostMapping(path = "/products/change")
+    @PostMapping(path = "/products/change") // ИЗМЕНИТЬ ТОВАР -сохранить новые категорию, имя, цену
     public String saveChangedProduct(@RequestParam(name = "productId", required = false) Long productId,
                                      @RequestParam(name = "categoryId", required = false) Long categoryId,
                                      @RequestParam(name = "name", required = false) String name,
@@ -157,7 +158,7 @@ public class ProductController {
                 + "&oldCategoryId=" + oldCategoryId;
     }
 
-    @GetMapping(path = "/products/change_characteristics")
+    @GetMapping(path = "/products/change_characteristics") // ИЗМЕНИТЬ ТОВАР -изменить характеристики
     public String changeCharacteristics(
             Model model,
             @RequestParam(name = "productId", required = false) Long productId,
@@ -205,7 +206,7 @@ public class ProductController {
         return "characteristics_describe";
     }
 
-    @PostMapping(path = "/products/change_characteristics")
+    @PostMapping(path = "/products/change_characteristics") // ИЗМЕНИТЬ ТОВАР -сохранить характеристики
     public String saveChangedCharacteristics(
             Model model,
             @RequestParam(name = "productId", required = false) Long productId,
@@ -267,11 +268,16 @@ public class ProductController {
         Review review = reviewRepository.findByUserAndProduct(currentUser, product).orElse(null);
         boolean reviewExists = review != null;
 
+        boolean userAuthorized = currentUser != null;
+        boolean isAdmin = currentUser != null && currentUser.getRole().equals(UserRole.ADMIN);
+
         model.addAttribute("product", product);
         model.addAttribute("characteristics", productCharacteristics);
         model.addAttribute("reviews", reviews);
         model.addAttribute("averageRating", averageRating);
         model.addAttribute("reviewExists", reviewExists);
+        model.addAttribute("userAuthorized", userAuthorized);
+        model.addAttribute("isAdmin", isAdmin);
 
         return "product_view_page";
     }
@@ -429,10 +435,22 @@ public class ProductController {
     }
 
     @GetMapping(path = "/products/moderate_reviews/delete")
-    public String deleteReview(@RequestParam(name = "reviewId", required = true) Long reviewId) {
+    public String deleteReview(@RequestParam(name = "reviewId", required = true) Long reviewId,
+                               @RequestParam(name = "productId", required = true) Long productId) {
         Review review = reviewRepository.findById(reviewId).orElseThrow();
         reviewRepository.delete(review);
-        return "redirect:/products/moderate_reviews";
+
+        if (productId == null) return "redirect:/products/moderate_reviews";
+        else return "redirect:/products/view?productId=" + productId;
+    }
+
+    @GetMapping(path = "/products/moderate_reviews/hide")
+    public String hideReview(@RequestParam(name = "productId", required = true) Long productId,
+                             @RequestParam(name = "reviewId", required = true) Long reviewId) {
+        Review review = reviewRepository.findById(reviewId).orElseThrow();
+        review.setPublished(false);
+        reviewRepository.save(review);
+        return "redirect:/products/view?productId=" + productId;
     }
 
     @GetMapping(path = "/products/moderate_orders")

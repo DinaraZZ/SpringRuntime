@@ -19,16 +19,18 @@ public class SecurityConfig {
         httpSecurity.authorizeHttpRequests(authorizationConfigurer -> {
             //сначала запрещающие
 
-//            authorizationConfigurer.requestMatchers("/products/addToCart").authenticated(); // разрешение к обращению только авторизованным польз
+            /*authorizationConfigurer.requestMatchers("/products/create/**").hasRole("ADMIN"); // создать товар
+            authorizationConfigurer.requestMatchers("/products/cart/**").authenticated(); // корзина
+            authorizationConfigurer.requestMatchers("/products/place_order").authenticated(); // создание заказа
+            authorizationConfigurer.requestMatchers("/products/orders").authenticated(); // заказы
+            authorizationConfigurer.requestMatchers("/products/moderate_reviews/**").hasRole("ADMIN"); // модерация отзывов
+            authorizationConfigurer.requestMatchers("/products/moderate_orders/**").hasRole("ADMIN"); // модерация заказов
+            authorizationConfigurer.requestMatchers("/products/change/**").hasRole("ADMIN"); // редактирование заказов
+            authorizationConfigurer.requestMatchers("/products/addToCart/**").authenticated(); // добавление в корзину*/
 
-            authorizationConfigurer.requestMatchers("/products/create/category").hasRole("ADMIN"); // создать товар
-            authorizationConfigurer.requestMatchers("/products/create").hasRole("ADMIN"); // создавть товар
-            authorizationConfigurer.requestMatchers("/products/cart").hasRole("USER"); // корзина
-            authorizationConfigurer.requestMatchers("/products/place_order").hasRole("USER"); // создавние заказа
-            authorizationConfigurer.requestMatchers("/products/orders").hasRole("USER"); // заказы
-//
-//            authorizationConfigurer.requestMatchers("/products/addToCart").hasRole("USER");
-
+            authorizationConfigurer.requestMatchers("/products/create/**").hasRole("ADMIN"); // создать товар
+            authorizationConfigurer.requestMatchers("/products/change").hasRole("ADMIN"); // изменить товар
+            authorizationConfigurer.requestMatchers("/products/change_characteristics").hasRole("ADMIN"); // изменить товар
 
             authorizationConfigurer.anyRequest().permitAll();
         });

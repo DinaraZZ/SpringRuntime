@@ -47,7 +47,7 @@
 
     <!--Оставить отзыв и рейтинг-->
     <div class="review_container">
-        <th:block th:if="${reviewExists} == false">
+        <th:block th:if="${reviewExists == false && userAuthorized == true}">
             <form class="review_block" method="post" action="/products/saveReview">
                 <input type="hidden" name="productId" th:value="${product.getId()}">
                 <select class="rating_select" name="rating">
@@ -64,6 +64,10 @@
         <th:block th:if="${reviewExists} == true">
             <p class="not_available_text">Вы уже оставили отзыв к этому товару. Повторная оценка невозможна.</p>
         </th:block>
+
+        <th:block th:if="${userAuthorized == false}">
+            <p class="not_available_text">Авторизуйтесь, чтобы оставить отзыв.</p>
+        </th:block>
     </div>
 
 
@@ -78,6 +82,19 @@
                 <div class="comment_text">
                     <div th:text="${'Рейтинг: ' + review.getRating()}"></div>
                     <div th:text="${review.getCommentary()}"></div>
+                </div>
+
+                <div class="admin_buttons" th:if="${isAdmin == true}">
+                    <form method="get" action="/products/moderate_reviews/hide">
+                        <input type="hidden" name="productId" th:value="${product.getId()}">
+                        <input type="hidden" name="reviewId" th:value="${review.getId()}">
+                        <button>Скрыть</button>
+                    </form>
+                    <form method="get" action="/products/moderate_reviews/delete">
+                        <input type="hidden" name="productId" th:value="${product.getId()}">
+                        <input type="hidden" name="reviewId" th:value="${review.getId()}">
+                        <button>Удалить</button>
+                    </form>
                 </div>
             </th:block>
         </div>
