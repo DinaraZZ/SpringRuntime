@@ -8,7 +8,7 @@
 <body>
 <div class="head_stripe">
     <div>
-        <a href="/products/create/category">
+        <a th:if="${isAdmin == true}" href="/products/create/category">
             <button class="head_button">Создать товар</button>
         </a>
         <a href="/products/cart">
@@ -17,23 +17,31 @@
         <a href="/products/orders">
             <button class="head_button">Заказы</button>
         </a>
-        <a href="/products/moderate_reviews">
+        <a th:if="${isAdmin == true}" href="/products/moderate_reviews">
             <button class="head_button">Модерация отзывов</button>
         </a>
-        <a href="/products/moderate_orders">
+        <a th:if="${isAdmin == true}" href="/products/moderate_orders">
             <button class="head_button">Модерация заказов</button>
         </a>
     </div>
-    <div>
+    <div th:if="${user_entered == false}">
         <a href="/login">
             <button class="head_button">Вход</button>
         </a>
         <a href="/user/sign_up">
             <button class="head_button">Регистрация</button>
         </a>
-        <a href="/logout">
-            <button class="head_button">Выход</button>
-        </a>
+    </div>
+    <div th:if="${user_entered == true}">
+        <div class="true">
+            <button class="head_button" th:text="${'Hi, ' + user.getFirstName()}"></button>
+            <div class="false">
+                <button class="signed_button top" th:text="${'Hi, ' + user.getFirstName()}"></button>
+                <a href="/logout">
+                    <button class="signed_button bottom">Выход</button>
+                </a>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -41,7 +49,7 @@
     <div th:each="product : ${products}" class="product_block">
         <div th:text="${product.getName()}" class="product_name"></div>
         <div class="buttons_container">
-            <form method="get" action="/products/change">
+            <form th:if="${isAdmin == true}" method="get" action="/products/change">
                 <button type="submit" name="productId" th:value="${product.getId()}" class="product_button">
                     Edit
                 </button>

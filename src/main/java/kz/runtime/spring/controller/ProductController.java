@@ -58,6 +58,10 @@ public class ProductController {
     public String productResource(@RequestParam(name = "categoryId", required = false) Long categoryId,
                                   Model model) {
 
+        User user = userService.getCurrentUser();
+        boolean userEntered = user != null;
+        boolean isAdmin = user != null && user.getRole().equals(UserRole.ADMIN);
+
         if (categoryId != null) {
             Category category = categoryRepository.findById(categoryId).orElseThrow();
             List<Product> categoryProducts = category.getProducts();
@@ -66,6 +70,14 @@ public class ProductController {
             List<Product> products = productRepository.findAll();
             model.addAttribute("products", products);
         }
+
+        if (userEntered) {
+            model.addAttribute("user", user);
+        }
+
+        model.addAttribute("user_entered", userEntered);
+        model.addAttribute("isAdmin", isAdmin);
+
         return "product_product_resource_page";
     }
 
@@ -436,7 +448,7 @@ public class ProductController {
 
     @GetMapping(path = "/products/moderate_reviews/delete") // МОДЕРАЦИЯ ОТЗЫВОВ -удалить
     public String deleteReview(@RequestParam(name = "reviewId", required = true) Long reviewId,
-                               @RequestParam(name = "productId", required = true) Long productId) {
+                               @RequestParam(name = "productId", required = false) Long productId) {
         Review review = reviewRepository.findById(reviewId).orElseThrow();
         reviewRepository.delete(review);
 
