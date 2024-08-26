@@ -6,6 +6,7 @@ import kz.runtime.spring.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.Banner;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -52,6 +53,9 @@ public class ProductController {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
 
     @GetMapping(path = "/products") // ГЛАВНАЯ СТРАНИЦА
@@ -519,7 +523,7 @@ public class ProductController {
             user = new User();
             user.setRole(UserRole.USER);
             user.setLogin(login);
-            user.setPassword(password);
+            user.setPassword(passwordEncoder.encode(password));
             user.setFirstName(firstName);
             user.setLastName(lastName);
             user.setSignUpDate(LocalDateTime.now());

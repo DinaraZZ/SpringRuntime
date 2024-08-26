@@ -41,9 +41,11 @@
             </form>
         </div>
     </div>
-    <form method="get" action="/products">
+
+    <th:block th:replace="fragments/main_button_fragment :: main_button('/products')"></th:block>
+    <!--<form method="get" action="/products">
         <button class="main_page_button">Main page</button>
-    </form>
+    </form>-->
 
     <!--Оставить отзыв и рейтинг-->
     <div class="review_container">
