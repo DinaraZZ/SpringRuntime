@@ -8,66 +8,84 @@
 <body>
 
 <th:block th:replace="fragments/head_stripe_fragment :: header"></th:block>
-    <!--<div class="head_stripe">
-        <div>
-            <a th:if="${isAdmin == true}" href="/products/create/category">
-                <button class="head_button">Создать товар</button>
-            </a>
-            <a href="/products/cart">
-                <button class="head_button">Корзина</button>
-            </a>
-            <a href="/products/orders">
-                <button class="head_button">Заказы</button>
-            </a>
-            <a th:if="${isAdmin == true}" href="/products/moderate_reviews">
-                <button class="head_button">Модерация отзывов</button>
-            </a>
-            <a th:if="${isAdmin == true}" href="/products/moderate_orders">
-                <button class="head_button">Модерация заказов</button>
-            </a>
-        </div>
-        <div th:if="${user_entered == false}">
-            <a href="/login">
-                <button class="head_button">Вход</button>
-            </a>
-            <a href="/user/sign_up">
-                <button class="head_button">Регистрация</button>
-            </a>
-        </div>
-        <div th:if="${user_entered == true}">
-            <div class="true">
-                <button class="head_button" th:text="${'Hi, ' + user.getFirstName()}"></button>
-                <div class="false">
-                    <button class="signed_button top" th:text="${'Hi, ' + user.getFirstName()}"></button>
-                    <a href="/logout">
-                        <button class="signed_button bottom">Выход</button>
-                    </a>
-                </div>
-            </div>
-        </div>
-    </div>-->
-
-    <div class="products_container">
-        <div th:each="product : ${products}" class="product_block">
-            <div th:text="${product.getName()}" class="product_name"></div>
-            <div class="buttons_container">
-                <form th:if="${isAdmin == true}" method="get" action="/products/change">
-                    <button type="submit" name="productId" th:value="${product.getId()}" class="product_button">
-                        Edit
-                    </button>
-                </form>
-                <form method="get" action="/products/view">
-                    <button type="submit" name="productId" th:value="${product.getId()}" class="product_button">
-                        View
-                    </button>
-                </form>
-                <form method="get" action="/products/addToCart">
-                    <button type="submit" name="productId" th:value="${product.getId()}" class="product_button">
-                        Add to Cart
-                    </button>
-                </form>
+<!--<div class="head_stripe">
+    <div>
+        <a th:if="${isAdmin == true}" href="/products/create/category">
+            <button class="head_button">Создать товар</button>
+        </a>
+        <a href="/products/cart">
+            <button class="head_button">Корзина</button>
+        </a>
+        <a href="/products/orders">
+            <button class="head_button">Заказы</button>
+        </a>
+        <a th:if="${isAdmin == true}" href="/products/moderate_reviews">
+            <button class="head_button">Модерация отзывов</button>
+        </a>
+        <a th:if="${isAdmin == true}" href="/products/moderate_orders">
+            <button class="head_button">Модерация заказов</button>
+        </a>
+    </div>
+    <div th:if="${user_entered == false}">
+        <a href="/login">
+            <button class="head_button">Вход</button>
+        </a>
+        <a href="/user/sign_up">
+            <button class="head_button">Регистрация</button>
+        </a>
+    </div>
+    <div th:if="${user_entered == true}">
+        <div class="true">
+            <button class="head_button" th:text="${'Hi, ' + user.getFirstName()}"></button>
+            <div class="false">
+                <button class="signed_button top" th:text="${'Hi, ' + user.getFirstName()}"></button>
+                <a href="/logout">
+                    <button class="signed_button bottom">Выход</button>
+                </a>
             </div>
         </div>
     </div>
+</div>-->
+
+<div class="products_container">
+    <div th:each="product : ${products}" class="product_block">
+        <div th:text="${product.getName()}" class="product_name"></div>
+        <div class="buttons_container">
+            <form th:if="${isAdmin == true}" method="get" action="/products/change">
+                <button type="submit" name="productId" th:value="${product.getId()}" class="product_button">
+                    Edit
+                </button>
+            </form>
+            <form method="get" action="/products/view">
+                <button type="submit" name="productId" th:value="${product.getId()}" class="product_button">
+                    View
+                </button>
+            </form>
+            <form method="get" action="/products/addToCart">
+                <button type="submit" name="productId" th:value="${product.getId()}" class="product_button">
+                    Add to Cart
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div style="display: flex;">
+    <form th:if="${pageNumber > 1}" method="get" action="/products">
+        <button type="submit" name="prevPage" value="1">Prev</button>
+        <input type="hidden" name="pageNumber" th:value="${pageNumber - 1}">
+    </form>
+    <div th:text="${pageNumber}"></div>
+
+    <form th:each="i : ${#numbers.sequence(1,4)}">
+        <button type="submit" name="pageNumber"></button>
+    </form>
+
+    <form th:if="${isPageLast == false}" method="get" action="/products">
+        <button type="submit" name="nextPage" value="1">Next</button>
+        <input type="hidden" name="pageNumber" th:value="${pageNumber - 1}">
+    </form>
+</div>
+
 </body>
 </html>

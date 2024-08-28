@@ -5,6 +5,9 @@ import kz.runtime.spring.repository.*;
 import kz.runtime.spring.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.Banner;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
@@ -59,28 +62,52 @@ public class ProductController {
 
 
     @GetMapping(path = "/products") // ГЛАВНАЯ СТРАНИЦА
-    public String productResource(@RequestParam(name = "categoryId", required = false) Long categoryId,
+    public String productResource(@RequestParam(name = "prevPage", required = false) Integer prevPage,
+                                  @RequestParam(name = "nextPage", required = false) Integer nextPage,
+                                  @RequestParam(name = "pageNumber", required = false) Integer pageNumber,
                                   Model model) {
 
         User user = userService.getCurrentUser();
         boolean userEntered = user != null;
         boolean isAdmin = user != null && user.getRole().equals(UserRole.ADMIN);
 
-        if (categoryId != null) {
-            Category category = categoryRepository.findById(categoryId).orElseThrow();
-            List<Product> categoryProducts = category.getProducts();
-            model.addAttribute("products", categoryProducts);
-        } else {
-            List<Product> products = productRepository.findAll();
-            model.addAttribute("products", products);
-        }
+        int pageNum = 0;
+        if (pageNumber != null) pageNum = pageNumber;
+        if (prevPage != null) pageNum--;
+        if (nextPage != null) pageNum++;
+
+        Sort sort = Sort.by(Sort.Order.asc("id"));
+        Pageable pageable = PageRequest.of(pageNum, 7, sort);
+        Page<Product> productPage = productRepository.findAll(pageable);
+        List<Product> products = productPage.getContent();
+
+        int totalPages = productPage.getTotalPages();
+        boolean isPageLast = pageNum + 1 == totalPages;
+
+        // прев, 4 из 7, след, очень след
+        // 1 ... последняя
 
         if (userEntered) {
             model.addAttribute("user", user);
         }
 
+        // 1 2 3 4
+        // 5 6 7 8
+        // 9 10 11 12
+
+        // 12/4 = 3 | 12%4 = 0
+        // 11/4 = 2 | 11%4 = 3
+
+//        if (pageNum)
+
+//        int startPage =
+
+        model.addAttribute("products", products);
         model.addAttribute("user_entered", userEntered);
         model.addAttribute("isAdmin", isAdmin);
+        model.addAttribute("pageNumber", pageNum + 1);
+        model.addAttribute("isPageLast", isPageLast);
+        model.addAttribute("totalPages", totalPages);
 
         return "product_product_resource_page";
     }
