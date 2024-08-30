@@ -8,4 +8,5 @@ import java.util.List;
 
 public interface CharacteristicRepository extends JpaRepository<Characteristic, Long> {
     List<Characteristic> findAllByCategoryOrderById(Category category);
+    List<Characteristic> findAllByCategoryIdOrderById(Long categoryId);
 }

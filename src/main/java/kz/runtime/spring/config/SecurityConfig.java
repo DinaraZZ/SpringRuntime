@@ -36,7 +36,15 @@ public class SecurityConfig {
         });
 
         httpSecurity.formLogin(formLoginConfigurer -> {
+            formLoginConfigurer.loginPage("/login"); // не будет перенаправлять на стандартную Спринг страницу
+            formLoginConfigurer.usernameParameter("login"); // параметры для формы Post методом
+            formLoginConfigurer.passwordParameter("password");
             formLoginConfigurer.defaultSuccessUrl("/products"); // адрес, на который попадёт пользователь после успешного входа
+
+        });
+
+        httpSecurity.logout(logoutConfigurer -> {
+           logoutConfigurer.logoutSuccessUrl("/products");
         });
 
         return httpSecurity.build();

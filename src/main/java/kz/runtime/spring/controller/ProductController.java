@@ -65,27 +65,38 @@ public class ProductController {
     public String productResource(@RequestParam(name = "prevPage", required = false) Integer prevPage,
                                   @RequestParam(name = "nextPage", required = false) Integer nextPage,
                                   @RequestParam(name = "pageNumber", required = false) Integer pageNumber,
+                                  @RequestParam(name = "prevPack", required = false) Integer prevPack,
+                                  @RequestParam(name = "nextPack", required = false) Integer nextPack,
                                   Model model) {
+
+        // Все категории в алфавитном порядке
+        Sort sortCategories = Sort.by(Sort.Order.asc("name"));
+        List<Category> categories = categoryRepository.findAll(sortCategories);
+        model.addAttribute("categories", categories);
 
         User user = userService.getCurrentUser();
         boolean userEntered = user != null;
         boolean isAdmin = user != null && user.getRole().equals(UserRole.ADMIN);
 
-        int pageNum = 0;
-        if (pageNumber != null) pageNum = pageNumber;
-        if (prevPage != null) pageNum--;
-        if (nextPage != null) pageNum++;
+        int pageIndex = 0;
+        final int PACK_NUMBER = 4;
+        final int PAGE_ELEMENTS_NUMBER = 7;
+        if (pageNumber != null) pageIndex = pageNumber;
+        if (prevPage != null) pageIndex--;
+        if (nextPage != null) pageIndex++;
+        if (prevPack != null) pageIndex = (pageIndex + 1) - ((pageIndex + 1) % PACK_NUMBER == 0 ?
+                2 * PACK_NUMBER : (PACK_NUMBER + (pageIndex + 1) % PACK_NUMBER));
+        if (nextPack != null) pageIndex = (pageIndex + 1) + ((pageIndex + 1) % PACK_NUMBER == 0 ?
+                0 : ((PACK_NUMBER - (pageIndex + 1) % PACK_NUMBER)));
+
 
         Sort sort = Sort.by(Sort.Order.asc("id"));
-        Pageable pageable = PageRequest.of(pageNum, 7, sort);
+        Pageable pageable = PageRequest.of(pageIndex, PAGE_ELEMENTS_NUMBER, sort);
         Page<Product> productPage = productRepository.findAll(pageable);
         List<Product> products = productPage.getContent();
 
         int totalPages = productPage.getTotalPages();
-        boolean isPageLast = pageNum + 1 == totalPages;
-
-        // прев, 4 из 7, след, очень след
-        // 1 ... последняя
+        boolean isPageLast = pageIndex + 1 == totalPages;
 
         if (userEntered) {
             model.addAttribute("user", user);
@@ -95,18 +106,28 @@ public class ProductController {
         // 5 6 7 8
         // 9 10 11 12
 
-        // 12/4 = 3 | 12%4 = 0
-        // 11/4 = 2 | 11%4 = 3
+        int startPage;
+        int lastPage;
+        if (nextPack == null && prevPack == null) {
+            startPage = 1;
+            if (pageIndex + 1 >= PACK_NUMBER) {
+                startPage = (pageIndex + 1) % PACK_NUMBER == 0 ?
+                        (pageIndex + 1) - 3 : (pageIndex + 1) - (pageIndex + 1) % PACK_NUMBER + 1;
+            }
+        } else {
+            startPage = pageIndex + 1;
+        }
 
-//        if (pageNum)
+        lastPage = Math.min(startPage + 3, totalPages);
 
-//        int startPage =
 
         model.addAttribute("products", products);
         model.addAttribute("user_entered", userEntered);
         model.addAttribute("isAdmin", isAdmin);
-        model.addAttribute("pageNumber", pageNum + 1);
+        model.addAttribute("pageNumber", pageIndex + 1);
         model.addAttribute("isPageLast", isPageLast);
+        model.addAttribute("lastPage", lastPage);
+        model.addAttribute("startPage", startPage);
         model.addAttribute("totalPages", totalPages);
 
         return "product_product_resource_page";
@@ -534,7 +555,7 @@ public class ProductController {
         return "sign_up_page";
     }
 
-    @PostMapping(path = "/user/sign_up/save")
+    @PostMapping(path = "/user/sign_up/save") // РЕГИСТРАЦИЯ -сохранение нового пользователя
     public String saveNewUser(@RequestParam(name = "login", required = true) String login,
                               @RequestParam(name = "password", required = true) String password,
                               @RequestParam(name = "firstName", required = true) String firstName,
@@ -557,5 +578,34 @@ public class ProductController {
             userRepository.save(user);
             return "redirect:/login";
         }
+    }
+
+    @GetMapping(path = "/login")
+    public String signIn(Model model,
+                         @RequestParam(name = "error", required = false) String error) {
+        if (error != null)
+            model.addAttribute("error_msg", "Неверные данные");
+
+        return "sign_in_page";
+    }
+
+    @GetMapping(path = "/products/category")
+    public String productsByCategory(@RequestParam(name = "categoryId", required = true) Long categoryId,
+                                     Model model) {
+
+        List<Characteristic> characteristics = characteristicRepository.findAllByCategoryIdOrderById(categoryId);
+        model.addAttribute("characteristics", characteristics);
+
+        Map<Long, List<ProductCharacteristic>> descriptions = new HashMap<>();
+        for (Characteristic characteristic : characteristics) {
+            List<ProductCharacteristic> descriptionsList = productCharacteristicRepository.findAllByCharacteristic(characteristic);
+            descriptions.put(characteristic.getId(), descriptionsList);
+        }
+        model.addAttribute("descriptionsMap", descriptions);
+
+        List<Product> products = productRepository.findAllByCategoryId(categoryId);
+        model.addAttribute("products", products);
+
+        return "products_categories_page";
     }
 }

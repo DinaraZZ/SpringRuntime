@@ -47,6 +47,13 @@
     </div>
 </div>-->
 
+<div style="display: flex; justify-content: center; margin: 10px 50px 0 50px;">
+    <form th:each="category : ${categories}" method="get" action="/products/category">
+        <button type="submit" th:text="${category.getName()}" name="categoryId" th:value="${category.getId()}"></button>
+    </form>
+</div>
+
+
 <div class="products_container">
     <div th:each="product : ${products}" class="product_block">
         <div th:text="${product.getName()}" class="product_name"></div>
@@ -70,22 +77,47 @@
     </div>
 </div>
 
-<div style="display: flex;">
-    <form th:if="${pageNumber > 1}" method="get" action="/products">
-        <button type="submit" name="prevPage" value="1">Prev</button>
+<div style="display: flex; justify-content: flex-end; margin: 15px 50px 0 0;">
+    <form th:if="${pageNumber > 4}" method="get" action="/products">
+        <button type="submit" name="prevPack" value="1"><<</button>
         <input type="hidden" name="pageNumber" th:value="${pageNumber - 1}">
     </form>
-    <div th:text="${pageNumber}"></div>
 
-    <form th:each="i : ${#numbers.sequence(1,4)}">
-        <button type="submit" name="pageNumber"></button>
+    <form th:if="${pageNumber > 1}" method="get" action="/products" style="margin-right: 5px;">
+        <button type="submit" name="prevPage" value="1"><</button>
+        <input type="hidden" name="pageNumber" th:value="${pageNumber - 1}">
     </form>
 
-    <form th:if="${isPageLast == false}" method="get" action="/products">
-        <button type="submit" name="nextPage" value="1">Next</button>
+    <form th:if="${pageNumber > 4}" method="get" action="/products">
+        <button type="submit" name="pageNumber" value="0">1</button>
+    </form>
+
+    <span th:if="${pageNumber > 4}">...</span>
+
+    <form th:each="i : ${#numbers.sequence(startPage, lastPage)}" method="get" action="/products">
+        <button th:if="${i != pageNumber}"
+                type="submit" name="pageNumber" th:text="${i}" th:value="${i - 1}"></button>
+        <button th:if="${i == pageNumber}" style="background-color: #afd5ab"
+                type="submit" name="pageNumber" th:text="${i}" th:value="${i - 1}"></button>
+    </form>
+
+    <span th:if="${totalPages - startPage >= 4}">...</span>
+
+    <form th:if="${totalPages - startPage >= 4}" method="get" action="/products">
+        <button type="submit" name="pageNumber" th:value="${totalPages - 1}" th:text="${totalPages}"></button>
+    </form>
+
+    <form th:if="${isPageLast == false}" method="get" action="/products" style="margin-left: 5px;">
+        <button type="submit" name="nextPage" value="1">></button>
+        <input type="hidden" name="pageNumber" th:value="${pageNumber - 1}">
+    </form>
+
+    <form th:if="${lastPage != totalPages}" method="get" action="/products">
+        <button type="submit" name="nextPack" value="1">>></button>
         <input type="hidden" name="pageNumber" th:value="${pageNumber - 1}">
     </form>
 </div>
+
 
 </body>
 </html>

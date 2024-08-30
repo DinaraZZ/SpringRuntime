@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<link rel="stylesheet" type="text/css" href="/css/product_resource_1_page.css"/>
+<head>
+    <meta charset="UTF-8">
+    <title>Products</title>
+</head>
+<body>
+
+<th:block th:replace="fragments/head_stripe_fragment :: header"></th:block>
+
+<div style="display: flex;">
+    <select th:each="characteristic : ${characteristics}">
+        <option disabled selected th:text="${characteristic.getName()}"></option>
+        <option th:each="description : ${descriptionsMap.get(characteristic.getId())}"
+                th:value="${description.getId()}"
+                th:text="${description.getDescription()}">
+    </select>
+</div>
+
+<div class="products_container">
+    <div th:each="product : ${products}" class="product_block">
+        <div th:text="${product.getName()}" class="product_name"></div>
+        <div class="buttons_container">
+            <form th:if="${isAdmin == true}" method="get" action="/products/change">
+                <button type="submit" name="productId" th:value="${product.getId()}" class="product_button">
+                    Edit
+                </button>
+            </form>
+            <form method="get" action="/products/view">
+                <button type="submit" name="productId" th:value="${product.getId()}" class="product_button">
+                    View
+                </button>
+            </form>
+            <form method="get" action="/products/addToCart">
+                <button type="submit" name="productId" th:value="${product.getId()}" class="product_button">
+                    Add to Cart
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<form method="get" action="/products">
+    <button class="main_page_button">Main page</button>
+</form>
+
+</body>
+</html>
